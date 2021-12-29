@@ -1,0 +1,7 @@
+aiohttp
+envparse
+opencv-python
+numpy
+torch
+torchvision
+torchsummary
