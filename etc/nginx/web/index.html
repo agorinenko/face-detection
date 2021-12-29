@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Детектирование объектов</title>
+    <script type="application/javascript" src="script.js"></script>
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="bootstrap.min.css"/>
+</head>
+<body>
+<div class="container detect">
+    <div class="d-flex justify-content-center">
+        <div class="hide" id="scene">
+            <h1>Детектирование объектов</h1>
+            <p>Для детектирования объектов предоставьте браузеру разрешение на камеру. Из-за того, что GPU на локальной
+                машине не доступно, объекты на изображениях детектируются с задержкой. Наберитесь терпения и подождите
+                около 10 секунд для смены кадра. Если же у вас доступно GPU, то приложение будет работать быстрее.
+                Ссылка на пояснение к работе: </p>
+            <img src="#" id="photo" alt="frame"/>
+            <p>По всем интересующим вас вопросам вы всегда можете отправить мне письмо на адрес
+                anton.gorinenko@gmail.com или использовать ссылки на мои соцсети внизу страницы на сайте
+                <a href="https://gorinenko.ru/" target="_blank">https://gorinenko.ru/</a>.</p>
+        </div>
+        <div class="loader" id="loader">
+            <h1>Разогреваем CPU...</h1>
+            <div class="spinner-border text-primary" role="status" style="width: 12rem; height: 12rem;">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+    </div>
+    <div class="hide">
+        <div class="camera">
+            <video id="video">Video stream not available.</video>
+        </div>
+        <canvas id="canvas"></canvas>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        onLoad()
+    </script>
+</div>
+</body>
+</html>

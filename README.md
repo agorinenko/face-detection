@@ -1,4 +1,27 @@
-# Реализация веб-демо с моделью детектирования
+# Implementation of a web demo with an image detection model
+
+Link to jupyter notebook
+
+## Start app in docker
+
+1. Install docker and docker-compose https://docs.docker.com/compose/install/
+2. Execute from the root directory of the project
+
+```shell script
+docker-compose up -d --build
+```
+
+Result on my PC
+
+```shell
+[+] Building 227.1s (22/22) FINISHED 
+[+] Running 2/2
+ ⠿ Container face_detection_app_1    Started                                                                                                                                                                                                                                                                                                                                                                                     3.2s
+ ⠿ Container face_detection_nginx_1  Started  
+```
+
+3. Open http://127.0.0.1/
+4. Profit!
 
 ## Install dev requirements
 
@@ -8,7 +31,7 @@ pip install -r requirements.dev.txt
 
 ## Start dev server
 
-Вызвать из корневого каталога проекта
+Execute from the root directory of the project
 
 ```shell script
 python -m api runserver api --root api --verbose
@@ -31,10 +54,6 @@ pytest -ra
 
 See ".env.example" file
 
-## Start in docker
-
-Create network
-
-```shell script
-docker network create
+```shell
+cp .env.example .env
 ```

@@ -1,0 +1,15 @@
+.active {
+  display: block;
+}
+
+.hide {
+  display: none;
+}
+
+.detect {
+  padding: 30px;
+}
+
+.loader {
+  padding: 120px;
+}
