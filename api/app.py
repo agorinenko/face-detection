@@ -20,9 +20,13 @@ def create_app() -> web.Application:
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
+    faster_r_cnn_model = fasterrcnn_resnet50_fpn(pretrained=False, pretrained_backbone=False, progress=False)
+    state_dict = torch.load('fasterrcnn_resnet50_fpn_coco.pth')
+    faster_r_cnn_model.load_state_dict(state_dict)
+
     application = web.Application(middlewares=[error_middleware])
     application['logger.server'] = logging.getLogger('aiohttp.server')
-    application['fasterrcnn_resnet50_fpn'] = fasterrcnn_resnet50_fpn(pretrained=True, progress=False).to(device)
+    application['fasterrcnn_resnet50_fpn'] = faster_r_cnn_model.to(device)
     application['device'] = device
     application.add_routes([web.get('/detector', websocket_handler)])
 
