@@ -1,3 +1,5 @@
+import time
+
 import aiohttp
 import cv2
 import torchvision.transforms as tf
@@ -10,22 +12,36 @@ from api import utils
 
 stats = (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)
 image_size = (640, 480)
+# CLASSES = np.asarray([
+#     '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
+#     'train', 'truck', 'boat', 'traffic light', 'fire', 'hydrant',
+#     'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
+#     'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra',
+#     'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
+#     'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
+#     'kite', 'baseball bat', 'baseball glove', 'skateboard',
+#     'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
+#     'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
+#     'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
+#     'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
+#     'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
+#     'keyboard', 'cell phone', 'microwave oven', 'toaster', 'sink',
+#     'refrigerator', 'book', 'clock', 'vase', 'scissors',
+#     'teddy bear', 'hair drier', 'toothbrush'
+# ])
 CLASSES = np.asarray([
     '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
-    'train', 'truck', 'boat', 'traffic light', 'fire', 'hydrant',
-    'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog',
-    'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra',
-    'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
-    'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
-    'kite', 'baseball bat', 'baseball glove', 'skateboard',
-    'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
-    'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
-    'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
-    'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
-    'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
-    'keyboard', 'cell phone', 'microwave oven', 'toaster', 'sink',
-    'refrigerator', 'book', 'clock', 'vase', 'scissors',
-    'teddy bear', 'hair drier', 'toothbrush'
+    'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'N/A', 'stop sign',
+    'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow',
+    'elephant', 'bear', 'zebra', 'giraffe', 'N/A', 'backpack', 'umbrella', 'N/A', 'N/A',
+    'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
+    'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket',
+    'bottle', 'N/A', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl',
+    'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
+    'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'N/A', 'dining table',
+    'N/A', 'N/A', 'toilet', 'N/A', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
+    'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'N/A', 'book',
+    'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
 ])
 COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
@@ -50,6 +66,8 @@ async def websocket_handler(request):
                     logger.debug('Received data')
                     data = await ws.receive_json()
 
+                    time_1 = time.time()
+
                     image = utils.from_b64(data['image'])
 
                     orig = image.copy()
@@ -60,8 +78,8 @@ async def websocket_handler(request):
                     image = torch.unsqueeze(image, 0)
 
                     image = image.to(device)
-
-                    model = utils.get_app_data(request, 'fasterrcnn_resnet50_fpn')
+                    model_name = data['model']
+                    model = utils.get_app_data(request, model_name)
 
                     model.eval()
                     with torch.set_grad_enabled(False):
@@ -73,7 +91,7 @@ async def websocket_handler(request):
                         confidence = detections["scores"][i]
                         # filter out weak detections by ensuring the confidence is
                         # greater than the minimum confidence
-                        if confidence > 0.8:
+                        if confidence > 0.7:
                             # extract the index of the class label from the detections,
                             # then compute the (x, y)-coordinates of the bounding box
                             # for the object
@@ -92,7 +110,11 @@ async def websocket_handler(request):
 
                     data = utils.to_b64(orig)
 
+                    time_2 = time.time()
+
                     await ws.send_json({
+                        'time': time_2 - time_1,
+                        'model': model_name,
                         'image': data
                     })
                 except Exception as ex:

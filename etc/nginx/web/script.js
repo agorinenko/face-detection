@@ -8,6 +8,9 @@ let loader = undefined;
 let photo = undefined;
 let canvas = undefined;
 let scene = undefined;
+let timeInSec = undefined;
+let modelName = undefined;
+
 
 let sceneIsHide = true;
 
@@ -17,6 +20,8 @@ function onLoad() {
     photo = document.getElementById('photo');
     canvas = document.getElementById('canvas');
     scene = document.getElementById('scene');
+    timeInSec = document.getElementById('time-in-sec');
+    modelName = document.getElementById('model-name');
 
     // Начало проигрывания видео потока с камеры
     navigator.mediaDevices.getUserMedia({
@@ -38,7 +43,9 @@ function onLoad() {
 function clientTask(ws) {
     const frame = takePicture()
     if (frame.length) {
+        const model = document.querySelector('input[name="model"]:checked').value
         const json = JSON.stringify({
+            model: model,
             image: frame
         })
         ws.send(json);
@@ -50,6 +57,8 @@ function clientTask(ws) {
 * */
 function serverHandler(jsonData) {
     photo.src = jsonData.image;
+    timeInSec.innerHTML = jsonData.time
+    modelName.innerHTML = jsonData.model
     if (sceneIsHide) {
         loader.classList.add('hide');
         scene.classList.remove('hide');
@@ -86,7 +95,7 @@ function connect(url, clientTask, serverHandler) {
             if (ws.bufferedAmount === 0) {
                 clientTask(ws);
             }
-        }, 1000);
+        }, 800);
     }
 
     ws.onmessage = message => {
@@ -125,8 +134,8 @@ function canplay() {
 
     // Подключаемся к WebSocket
     // for develop
-    // const ws_url = 'ws://127.0.0.1:8000/detector'
+    const ws_url = 'ws://127.0.0.1:8000/detector'
     // for nginx
-    const ws_url = 'ws://' + window.location.host + '/detector'
+    // const ws_url = 'ws://' + window.location.host + '/detector'
     connect(ws_url, clientTask, serverHandler);
 }

@@ -16,7 +16,66 @@
                 машине не доступно, объекты на изображениях детектируются с задержкой. Наберитесь терпения и подождите
                 около 10 секунд для смены кадра. Если же у вас доступно GPU, то приложение будет работать быстрее.
                 Ссылка на пояснение к работе: </p>
+            <p>Время обработки <span id="time-in-sec"></span> в секундах, модель <span id="model-name"></span>. </p>
             <img src="#" id="photo" alt="frame"/>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="model" value="fasterrcnn_resnet50_fpn"
+                       id="fasterrcnn_resnet50_fpn">
+                <label class="form-check-label" for="fasterrcnn_resnet50_fpn">
+                    Constructs a Faster R-CNN model with a ResNet-50-FPN backbone.
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="model" value="fasterrcnn_mobilenet_v3_large_fpn"
+                       id="fasterrcnn_mobilenet_v3_large_fpn" checked>
+                <label class="form-check-label" for="fasterrcnn_mobilenet_v3_large_fpn">
+                    Constructs a high resolution Faster R-CNN model with a MobileNetV3-Large FPN backbone.
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="model" value="fasterrcnn_mobilenet_v3_large_320_fpn"
+                       id="fasterrcnn_mobilenet_v3_large_320_fpn">
+                <label class="form-check-label" for="fasterrcnn_mobilenet_v3_large_320_fpn">
+                    Constructs a low resolution Faster R-CNN model with a MobileNetV3-Large FPN backbone tunned for
+                    mobile use-cases.
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="model" value="retinanet_resnet50_fpn"
+                       id="retinanet_resnet50_fpn">
+                <label class="form-check-label" for="retinanet_resnet50_fpn">
+                    Constructs a RetinaNet model with a ResNet-50-FPN backbone.
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="model" value="keypointrcnn_resnet50_fpn"
+                       id="keypointrcnn_resnet50_fpn">
+                <label class="form-check-label" for="keypointrcnn_resnet50_fpn">
+                    Constructs a Keypoint R-CNN model with a ResNet-50-FPN backbone.
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="model" value="maskrcnn_resnet50_fpn"
+                       id="maskrcnn_resnet50_fpn">
+                <label class="form-check-label" for="maskrcnn_resnet50_fpn">
+                    Constructs a Mask R-CNN model with a ResNet-50-FPN backbone.
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="model" value="ssdlite320_mobilenet_v3_large"
+                       id="ssdlite320_mobilenet_v3_large">
+                <label class="form-check-label" for="ssdlite320_mobilenet_v3_large">
+                    Constructs an SSDlite model with input size 320x320 and a MobileNetV3 Large backbone
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="model" value="ssd300_vgg16"
+                       id="ssd300_vgg16">
+                <label class="form-check-label" for="ssd300_vgg16">
+                    Constructs an SSD model with input size 300x300 and a VGG16 backbone.
+                </label>
+            </div>
             <p>По всем интересующим вас вопросам вы всегда можете отправить мне письмо на адрес
                 anton.gorinenko@gmail.com или использовать ссылки на мои соцсети внизу страницы на сайте
                 <a href="https://gorinenko.ru/" target="_blank">https://gorinenko.ru/</a>.</p>
