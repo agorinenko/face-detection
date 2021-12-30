@@ -18,7 +18,7 @@ def get_app_logger(request: Request) -> logging.Logger:
     return get_app_data(request, 'logger.server')
 
 
-def from_b64(uri):
+def from_b64(uri: str):
     """
     Convert from b64 uri to OpenCV image
     :param uri: base64 str, 'data:image/jpg;base64,/9j/4AAQSkZJR......'

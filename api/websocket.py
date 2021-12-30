@@ -50,10 +50,6 @@ async def websocket_handler(request):
     logger = utils.get_app_logger(request)
     device = utils.get_app_data(request, 'device')
 
-    transform = tf.Compose([
-        tf.ToTensor(),
-        tf.Normalize(*stats)])
-
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
@@ -66,51 +62,26 @@ async def websocket_handler(request):
                     logger.debug('Received data')
                     data = await ws.receive_json()
 
-                    time_1 = time.time()
+                    time_1 = time.monotonic()
 
                     image = utils.from_b64(data['image'])
+                    origin_image = image.copy()
 
-                    orig = image.copy()
+                    image = _image_to_tensor(image).to(device)
 
-                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                    image = Image.fromarray(image)
-                    image = transform(image)
-                    image = torch.unsqueeze(image, 0)
-
-                    image = image.to(device)
                     model_name = data['model']
                     model = utils.get_app_data(request, model_name)
 
-                    model.eval()
-                    with torch.set_grad_enabled(False):
-                        detections = model(image)[0]
+                    boxes, scores, labels = _predict(model, image)
 
-                    for i in range(0, len(detections["boxes"])):
-                        # extract the confidence (i.e., probability) associated with the
-                        # prediction
-                        confidence = detections["scores"][i]
-                        # filter out weak detections by ensuring the confidence is
-                        # greater than the minimum confidence
-                        if confidence > 0.7:
-                            # extract the index of the class label from the detections,
-                            # then compute the (x, y)-coordinates of the bounding box
-                            # for the object
-                            idx = int(detections["labels"][i])
-                            box = detections["boxes"][i].detach().cpu().numpy()
-                            (startX, startY, endX, endY) = box.astype("int")
-                            # display the prediction to our terminal
-                            label = "{}: {:.2f}%".format(CLASSES[idx], confidence * 100)
-                            # print("[INFO] {}".format(label))
-                            # draw the bounding box and label on the image
-                            cv2.rectangle(orig, (startX, startY), (endX, endY),
-                                          COLORS[idx], 2)
-                            y = startY - 15 if startY - 15 > 15 else startY + 15
-                            cv2.putText(orig, label, (startX, y),
-                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
+                    for i, box in enumerate(boxes):
+                        score = scores[i]
+                        if score > 0.8:
+                            origin_image = _update_origin_image(origin_image, box, score, labels[i])
 
-                    data = utils.to_b64(orig)
+                    data = utils.to_b64(origin_image)
 
-                    time_2 = time.time()
+                    time_2 = time.monotonic()
 
                     await ws.send_json({
                         'time': time_2 - time_1,
@@ -128,3 +99,59 @@ async def websocket_handler(request):
     logger.debug('websocket connection closed')
 
     return ws
+
+
+def _update_origin_image(origin_image, box, score, label):
+    """
+    Добавление к изображению рамки и текста с вероятностью и классом
+    :param origin_image: изображение
+    :param box: предсказанная рамка
+    :param score: вероятность того, что предсказание верное
+    :param label: метка класса
+    :return:
+    """
+    class_idx = int(label)
+
+    box = box.detach().cpu().numpy()
+    start_x, start_y, end_x, end_y = box.astype("int")
+    class_name = CLASSES[class_idx]
+    class_color = COLORS[class_idx]
+    label = "{}: {:.2f}%".format(class_name, score * 100)
+
+    cv2.rectangle(origin_image, (start_x, start_y), (end_x, end_y), class_color, 2)
+    y = start_y - 15 if start_y - 15 > 15 else start_y + 15
+    cv2.putText(origin_image, label, (start_x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, class_color, 2)
+
+    return origin_image
+
+
+def _predict(model, image: torch.Tensor):
+    """
+    Предсказание
+    :param model: модель
+    :param image: изображение
+    :return:
+    """
+    model.eval()
+    with torch.set_grad_enabled(False):
+        detections = model(image)[0]
+
+    return detections["boxes"], detections["scores"], detections["labels"]
+
+
+def _image_to_tensor(image) -> torch.Tensor:
+    """
+    Конвертация изображение в тензор
+    :param image: изображение
+    :return:
+    """
+    transform = tf.Compose([
+        tf.ToTensor(),
+        tf.Normalize(*stats)])
+
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = Image.fromarray(image)
+    image = transform(image)
+    image = torch.unsqueeze(image, 0)
+
+    return image
