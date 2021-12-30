@@ -2,6 +2,8 @@
 
 Link to jupyter notebook
 
+https://colab.research.google.com/drive/1J73R_8MC9OAqes4S2WyrpS9BLoP-2cE_?usp=sharing
+
 ## Start app in docker
 
 1. Install docker and docker-compose https://docs.docker.com/compose/install/
