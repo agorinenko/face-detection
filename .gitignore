@@ -1,3 +1,4 @@
+data/
 fasterrcnn_resnet50_fpn_coco.pth
 torch-1.10.1-cp37-cp37m-manylinux1_x86_64.whl
 .idea

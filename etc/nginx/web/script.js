@@ -108,7 +108,6 @@ function connect(url, clientTask, serverHandler) {
     }
 
     ws.onerror = event => {
-        console.error(event);
         ws.close();
     }
 
