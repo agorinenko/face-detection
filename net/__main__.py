@@ -2,8 +2,6 @@ import ssl
 
 import numpy as np
 import torch
-import torchvision
-from torchvision import transforms
 
 from net import models, train
 from net.criterions import MultiBoxLoss
@@ -27,6 +25,8 @@ if __name__ == "__main__":
     ])
     epochs = 1
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    print(f'DEVICE: {device}')
 
     model = models.SSD300(n_classes=len(CLASSES))
     model = model.to(device)
