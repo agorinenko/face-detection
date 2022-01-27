@@ -3,7 +3,6 @@ import ssl
 
 import torch
 from aiohttp import web
-from envparse import env
 from torchvision.models.detection import fasterrcnn_mobilenet_v3_large_320_fpn, fasterrcnn_mobilenet_v3_large_fpn, \
     fasterrcnn_resnet50_fpn, retinanet_resnet50_fpn, keypointrcnn_resnet50_fpn, maskrcnn_resnet50_fpn, \
     ssdlite320_mobilenet_v3_large, ssd300_vgg16
@@ -26,9 +25,7 @@ MODELS = {
 def create_app() -> web.Application:
     ssl._create_default_https_context = ssl._create_unverified_context
 
-    env.read_envfile(path='./.env')
-
-    log_level: str = env.str('LOG_LEVEL', default='error')
+    log_level = 'debug'
     logging.basicConfig(level=log_level.upper())
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")

@@ -51,11 +51,3 @@ pytest -ra
 2. Module name: api
 3. Parameters: runserver api --root api --verbose
 4. Working directory - укажите актуальные корневой каталог проекта
-
-## Environment variables
-
-See ".env.example" file
-
-```shell
-cp .env.example .env
-```
