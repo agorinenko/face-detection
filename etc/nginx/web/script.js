@@ -134,8 +134,8 @@ function canplay() {
 
     // Подключаемся к WebSocket
     // for develop
-    const ws_url = 'ws://127.0.0.1:8000/detector'
+    // const ws_url = 'ws://127.0.0.1:8000/detector'
     // for nginx
-    // const ws_url = 'ws://' + window.location.host + '/detector'
+    const ws_url = 'ws://' + window.location.host + '/detector'
     connect(ws_url, clientTask, serverHandler);
 }
