@@ -139,8 +139,22 @@ def train(model, epochs, criterion, device, losses=None, scores=None):
 
     with tqdm(desc="epoch", total=epochs) as pbar_outer:
         # инициализируем оптимизатор, передаем ему параметры модели
-        model_params = model.parameters()
-        optimizer = torch.optim.Adam(model_params, lr=1e-4)
+        # model_params = model.parameters()
+        # optimizer = torch.optim.Adam(model_params, lr=1e-4)
+        lr = 1e-3  # learning rate
+        momentum = 0.9  # momentum
+        weight_decay = 5e-4  # weight decay
+        biases = []
+        not_biases = []
+        for param_name, param in model.named_parameters():
+            if param.requires_grad:
+                if param_name.endswith('.bias'):
+                    biases.append(param)
+                else:
+                    not_biases.append(param)
+
+        optimizer = torch.optim.SGD(params=[{'params': biases, 'lr': 2 * lr}, {'params': not_biases}],
+                                    lr=lr, momentum=momentum, weight_decay=weight_decay)
         # Умножает learning_rate на 0.1 каждые 7 эпохи
         scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 

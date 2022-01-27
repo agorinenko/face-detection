@@ -1,6 +1,7 @@
 import torch
 import torchvision
 import torchvision.transforms.functional as FT
+from torchvision.datasets import ImageFolder
 
 
 def _collate_fn(batch):
@@ -38,6 +39,7 @@ def _coco_to_pascal(box):
     :return:
     """
     return [box[0], box[1], box[0] + box[2], box[1] + box[3]]
+
 
 
 def resize(image, boxes, dims=(300, 300), return_percent_coords=True):
