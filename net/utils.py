@@ -79,9 +79,10 @@ def cxcy_to_gcxgcy(cxcy, priors_cxcy):
     # They are for some sort of numerical conditioning, for 'scaling the localization gradient'
     # See https://github.com/weiliu89/caffe/issues/155
     p_1 = (cxcy[:, :2] - priors_cxcy[:, :2]) / (priors_cxcy[:, 2:] / 10) # g_c_x, g_c_y
-    p_2 = torch.log(cxcy[:, 2:] / priors_cxcy[:, 2:]) * 5  # g_w, g_h
+    p_2 = torch.log((cxcy[:, 2:] / priors_cxcy[:, 2:])+1e-7) * 5  # g_w, g_h
     p_list = [p_1,  p_2]
-    return torch.cat(p_list, 1)
+    v = torch.cat(p_list, 1)
+    return v
 
 
 def find_intersection(set_1, set_2):
